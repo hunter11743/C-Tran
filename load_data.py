@@ -124,6 +124,27 @@ def get_data(args):
             known_labels=args.test_known_labels,
         )
 
+    elif dataset == 'hok4ktest':
+        data_root = os.path.join(data_root,'CodingChallenge_v2')
+        train_dataset = HOK4KVis(
+            split='full',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=trainTransform,
+            testing=False,
+            known_labels=args.train_known_labels,
+        )
+        valid_dataset = HOK4KVis(
+            split='full',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=testTransform,
+            testing=True,
+            known_labels=args.test_known_labels,
+        )
+
     elif dataset == 'coco1000':
         ann_dir = os.path.join(data_root,'coco','annotations_pytorch')
         data_dir = os.path.join(data_root,'coco')

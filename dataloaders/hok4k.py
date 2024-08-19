@@ -19,6 +19,8 @@ class HOK4K(Dataset):
         self.known_labels = known_labels
         if self.split == 'train':
             self.data_list = range(0, int(self.num_images*0.8))
+        elif self.split == 'full':
+            self.data_list = range(0, int(self.num_images))
         else:
             self.data_list = range(int(self.num_images*0.8), self.num_images)
 
@@ -56,3 +58,4 @@ class HOK4KVis(HOK4K):
 
     def __getitem__(self, idx):
         return super().__getitem__(idx, clamp_labels=False)
+

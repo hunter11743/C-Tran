@@ -6,6 +6,7 @@ import torch
 import math
 from pdb import set_trace as stop
 import os
+import pandas as pd
 from models.utils import custom_replace
 from utils.metrics import *
 import torch.nn.functional as F 
@@ -42,7 +43,7 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
 
     unknown_label_mask = custom_replace(all_masks,1,0,0)
 
-    if args.dataset == 'hok4kvis':
+    if args.dataset.startswith('hok4k'):
         if known_labels > 0:
             mse = custom_mean_squared_error(all_targets,all_predictions,unknown_label_mask)
         else:
@@ -55,9 +56,11 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
         meanAP = metrics.average_precision_score(all_targets,all_predictions, average='macro', pos_label=1)
 
     optimal_threshold = 0.5 
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     all_targets = all_targets.numpy()
     all_predictions = all_predictions.numpy()
+    pred_frame = pd.DataFrame(all_predictions)
+    pred_frame.to_csv(args.saved_model_name.replace('.pt','.csv'),index=False)
     # import pdb; pdb.set_trace()
     top_2nd = np.sort(all_predictions)[:,-2].reshape(-1,1)
     all_predictions_top3 = all_predictions.copy()
@@ -139,7 +142,7 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
         print('Class Acc:    {:0.3f}'.format(class_acc))
         metrics_dict['concept_acc'] = concept_acc
         metrics_dict['class_acc'] = class_acc
-    if args.dataset == 'hok4kvis':
+    if args.dataset.startswith('hok4kvis'):
         print('MSE:   {:0.3f}'.format(mse) )
         metrics_dict['mse'] = mse
 

@@ -102,7 +102,6 @@ def run_epoch(args,model,data,optimizer,epoch,desc,train=False,warmup_scheduler=
 
     loss_total = loss_total/float(all_predictions.size(0))
     unk_loss_total = unk_loss_total/float(all_predictions.size(0))
-    import pdb; pdb.set_trace()
     return all_predictions,all_targets,all_masks,all_image_ids,loss_total,unk_loss_total
 
 
