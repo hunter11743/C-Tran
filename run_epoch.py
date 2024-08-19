@@ -36,11 +36,14 @@ def run_epoch(args,model,data,optimizer,epoch,desc,train=False,warmup_scheduler=
         all_image_ids += batch['imageIDs']
         
         mask_in = mask.clone()
+        # import pdb; pdb.set_trace()
 
         if train:
+            # import pdb;pdb.set_trace()
             pred,int_pred,attns = model(images.cuda(),mask_in.cuda())
         else:
             with torch.no_grad():
+                # import pdb; pdb.set_trace()
                 pred,int_pred,attns = model(images.cuda(),mask_in.cuda())
 
         if args.dataset == 'cub':
@@ -61,7 +64,10 @@ def run_epoch(args,model,data,optimizer,epoch,desc,train=False,warmup_scheduler=
             loss = loss_out
 
         else:
-            loss =  F.binary_cross_entropy_with_logits(pred.view(labels.size(0),-1),labels.cuda(),reduction='none')
+            if args.use_mse_loss:
+                loss = F.mse_loss(pred.view(labels.size(0),-1),labels.cuda())
+            else:
+                loss =  F.binary_cross_entropy_with_logits(pred.view(labels.size(0),-1),labels.cuda(),reduction='none')
 
             if args.loss_labels == 'unk': 
                 # only use unknown labels for loss
@@ -96,7 +102,7 @@ def run_epoch(args,model,data,optimizer,epoch,desc,train=False,warmup_scheduler=
 
     loss_total = loss_total/float(all_predictions.size(0))
     unk_loss_total = unk_loss_total/float(all_predictions.size(0))
-
+    import pdb; pdb.set_trace()
     return all_predictions,all_targets,all_masks,all_image_ids,loss_total,unk_loss_total
 
 

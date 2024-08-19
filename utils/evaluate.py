@@ -55,7 +55,7 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
         meanAP = metrics.average_precision_score(all_targets,all_predictions, average='macro', pos_label=1)
 
     optimal_threshold = 0.5 
-
+    import pdb; pdb.set_trace()
     all_targets = all_targets.numpy()
     all_predictions = all_predictions.numpy()
     # import pdb; pdb.set_trace()
@@ -140,7 +140,7 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
         metrics_dict['concept_acc'] = concept_acc
         metrics_dict['class_acc'] = class_acc
     if args.dataset == 'hok4kvis':
-        print('MSE: {:0.3f}'.format(mse) )
+        print('MSE:   {:0.3f}'.format(mse) )
         metrics_dict['mse'] = mse
 
     print('')

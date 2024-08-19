@@ -110,38 +110,47 @@ class Logger:
             print('**********************************')
 
         else:
+            is_best = False
             if args.dataset == 'hok4kvis':
                 if valid_metrics['mse'] <= self.best_mse:
                     self.best_mse = valid_metrics['mse']
                     self.best_test['epoch'] = epoch
+                    is_best = True
                 if valid_metrics['mAP'] >= self.best_mAP:
                     self.best_mAP = valid_metrics['mAP']
             else:
                 if valid_metrics['mAP'] >= self.best_mAP:
                     self.best_mAP = valid_metrics['mAP']
                     self.best_test['epoch'] = epoch
+                    is_best = True
 
             for metric in valid_metrics.keys():
                 if not 'all' in metric and not 'time'in metric:
                     self.best_valid[metric]= valid_metrics[metric]
                     self.best_test[metric]= test_metrics[metric]
 
-            print('> Saving Model\n')
-            save_dict =  {
-                'epoch': epoch,
-                'state_dict': model.state_dict(),
-                'valid_mAP': valid_metrics['mAP'],
-                'test_mAP': test_metrics['mAP'],
-                'valid_loss': valid_loss,
-                'test_loss': test_loss
+            if is_best:
+                print('> Saving Model\n')
+                save_dict = {
+                    'epoch': epoch,
+                    'state_dict': model.state_dict(),
+                    'valid_mAP': valid_metrics['mAP'],
+                    'test_mAP': test_metrics['mAP'],
+                    'valid_loss': valid_loss,
+                    'test_loss': test_loss
                 }
-            torch.save(save_dict, args.model_name+'/best_model.pt')
+                if args.dataset == 'hok4kvis':
+                    save_dict['valid_mse'] = valid_metrics['mse']
+                    save_dict['test_mse'] = test_metrics['mse']
+                torch.save(save_dict, args.model_name+'/best_model.pt')
 
 
         print('\n')
         print('**********************************')
-        print('best mAP:  {:0.1f}'.format(self.best_test['mAP']*100))
-        print('best CF1:  {:0.1f}'.format(self.best_test['CF1']*100))
-        print('best OF1:  {:0.1f}'.format(self.best_test['OF1']*100))
+        if args.dataset == 'hok4kvis':
+            print('best mse:  {:0.3f}'.format(self.best_test['mse']))
+        print('best mAP:  {:0.2f}'.format(self.best_test['mAP']*100))
+        print('best CF1:  {:0.2f}'.format(self.best_test['CF1']*100))
+        print('best OF1:  {:0.2f}'.format(self.best_test['OF1']*100))
         print('**********************************')
         return self.best_valid,self.best_test

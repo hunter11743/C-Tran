@@ -10,6 +10,7 @@ import utils.logger as logger
 from pdb import set_trace as stop
 from optim_schedule import WarmupLinearSchedule
 from run_epoch import run_epoch
+from inference import infer
 
 args = get_args(argparse.ArgumentParser())
 
@@ -50,6 +51,11 @@ if args.inference:
     all_preds,all_targs,all_masks,all_ids,test_loss,test_loss_unk = run_epoch(args,model,data_loader,None,1,'Testing')
     test_metrics = evaluate.compute_metrics(args,all_preds,all_targs,all_masks,test_loss,test_loss_unk,0,args.test_known_labels)
 
+    exit(0)
+
+if args.infer_custom:
+    model = load_saved_model(args.saved_model_name,model)
+    infer(args, model)
     exit(0)
 
 if args.freeze_backbone:

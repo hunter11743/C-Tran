@@ -39,6 +39,8 @@ def get_args(parser,eval=False):
     parser.add_argument('--use_lmt', dest='use_lmt', action='store_true',help='label mask training') 
     parser.add_argument('--freeze_backbone', action='store_true')
     parser.add_argument('--no_x_features', action='store_true')
+    parser.add_argument('--use_mse_loss', action='store_true')
+
 
     # CUB
     parser.add_argument('--attr_group_dict', type=str, default='')
@@ -51,8 +53,11 @@ def get_args(parser,eval=False):
 
     # Testing Models
     parser.add_argument('--inference', action='store_true')
+    parser.add_argument('--infer_custom', action='store_true')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--saved_model_name', type=str, default='')
+    parser.add_argument('--image_path', type=str, default='')
+
     
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--name', type=str, default='')
@@ -135,7 +140,7 @@ def get_args(parser,eval=False):
         args.epochs = 1
 
     
-    if os.path.exists(args.model_name) and (not args.overwrite) and (not 'test' in args.name) and (not eval) and (not args.inference) and (not args.resume):
+    if os.path.exists(args.model_name) and (not args.overwrite) and (not 'test' in args.name) and (not eval) and (not args.inference) and (not args.resume) and (not args.infer_custom):
         print(args.model_name)
         overwrite_status = input('Already Exists. Overwrite?: ')
         if overwrite_status == 'rm':
