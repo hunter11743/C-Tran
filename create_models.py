@@ -5,6 +5,5 @@ cms = [
     r"python main.py  --batch_size 8  --lr 0.00001 --epochs 100 --optim 'adam' --layers 3  --dataset 'hok4k' --use_lmt --dataroot /data --max_samples -1",
 ]
 
-
 for cm in cms:
     os.system(cm)

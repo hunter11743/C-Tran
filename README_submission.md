@@ -41,6 +41,7 @@ python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --datase
 * Params
   * dataset: hok4k, generates the standard classifier model
   * dataset: hok4kvis, generates the second model
+* Execute ```python create_models.py``` to create the 2 models as dicussed + an experimental model ignoring horizontal flips
 
 ### Inference
 ```shell
