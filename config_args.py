@@ -140,7 +140,12 @@ def get_args(parser,eval=False):
     if args.inference:
         args.epochs = 1
 
-    
+    if args.ignore_flips:
+        args.model_name += '.no_flip'
+
+    if args.max_samples != -1:
+        args.model_name += '.mini'
+
     if os.path.exists(args.model_name) and (not args.overwrite) and (not 'test' in args.name) and (not eval) and (not args.inference) and (not args.resume) and (not args.infer_custom):
         print(args.model_name)
         overwrite_status = input('Already Exists. Overwrite?: ')

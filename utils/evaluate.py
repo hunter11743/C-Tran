@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,elapsed,known_labels=0,all_metrics=False,verbose=True):
+def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,elapsed,known_labels=0,all_metrics=False,verbose=True, save_file=False):
     
     all_predictions = F.sigmoid(all_predictions)
 
@@ -59,8 +59,9 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
     # import pdb; pdb.set_trace()
     all_targets = all_targets.numpy()
     all_predictions = all_predictions.numpy()
-    pred_frame = pd.DataFrame(all_predictions)
-    pred_frame.to_csv(args.saved_model_name.replace('.pt','.csv'),index=False)
+    if save_file:
+        pred_frame = pd.DataFrame(all_predictions)
+        pred_frame.to_csv(args.saved_model_name.replace('.pt','.csv'),index=False)
     # import pdb; pdb.set_trace()
     top_2nd = np.sort(all_predictions)[:,-2].reshape(-1,1)
     all_predictions_top3 = all_predictions.copy()
