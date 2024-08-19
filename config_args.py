@@ -30,6 +30,7 @@ def get_args(parser,eval=False):
     parser.add_argument('--max_samples', type=int, default=-1)
     parser.add_argument('--max_batches', type=int, default=-1)
     parser.add_argument('--warmup_scheduler', action='store_true',help='')
+    parser.add_argument('--use_mse_loss', action='store_true')
 
     # Model
     parser.add_argument('--layers', type=int, default=3)
@@ -39,7 +40,7 @@ def get_args(parser,eval=False):
     parser.add_argument('--use_lmt', dest='use_lmt', action='store_true',help='label mask training') 
     parser.add_argument('--freeze_backbone', action='store_true')
     parser.add_argument('--no_x_features', action='store_true')
-    parser.add_argument('--use_mse_loss', action='store_true')
+    parser.add_argument('--ignore_flips', action='store_true')
 
 
     # CUB

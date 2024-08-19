@@ -32,19 +32,33 @@ def get_data(args):
     crop_size = random_crop
     if args.test_batch_size == -1:
         args.test_batch_size = batch_size
-    
-    trainTransform = transforms.Compose([transforms.Resize((scale_size, scale_size)),
-                                        transforms.RandomChoice([
-                                        transforms.RandomCrop(640),
-                                        transforms.RandomCrop(576),
-                                        transforms.RandomCrop(512),
-                                        transforms.RandomCrop(384),
-                                        transforms.RandomCrop(320)
-                                        ]),
-                                        transforms.Resize((crop_size, crop_size)),
-                                        transforms.RandomHorizontalFlip(),
-                                        transforms.ToTensor(),
-                                        normTransform])
+
+    if args.ignore_flips:
+        trainTransform = transforms.Compose([transforms.Resize((scale_size, scale_size)),
+                                            transforms.RandomChoice([
+                                            transforms.RandomCrop(640),
+                                            transforms.RandomCrop(576),
+                                            transforms.RandomCrop(512),
+                                            transforms.RandomCrop(384),
+                                            transforms.RandomCrop(320)
+                                            ]),
+                                            transforms.Resize((crop_size, crop_size)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            transforms.ToTensor(),
+                                            normTransform])
+    else:
+        trainTransform = transforms.Compose([transforms.Resize((scale_size, scale_size)),
+                                             transforms.RandomChoice([
+                                                 transforms.RandomCrop(640),
+                                                 transforms.RandomCrop(576),
+                                                 transforms.RandomCrop(512),
+                                                 transforms.RandomCrop(384),
+                                                 transforms.RandomCrop(320)
+                                             ]),
+                                             transforms.Resize((crop_size, crop_size)),
+                                             transforms.RandomHorizontalFlip(),
+                                             transforms.ToTensor(),
+                                             normTransform])
 
     testTransform = transforms.Compose([transforms.Resize((scale_size, scale_size)),
                                         transforms.CenterCrop(crop_size),
