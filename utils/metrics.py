@@ -271,10 +271,23 @@ def mean_avg_precision(true_targets, predictions, axis=0):
 def custom_mean_avg_precision(all_targets, all_predictions, unknown_label_mask):
     APs = []
     for label_idx in range(all_targets.size(1)):
-        all_targets_unk = torch.masked_select(all_targets[:,label_idx],unknown_label_mask[:,label_idx].type(torch.ByteTensor))
-        all_predictions_unk = torch.masked_select(all_predictions[:,label_idx],unknown_label_mask[:,label_idx].type(torch.ByteTensor))
+        all_targets_unk = torch.masked_select(all_targets[:,label_idx],unknown_label_mask[:,label_idx].type(torch.BoolTensor))
+        all_predictions_unk = torch.masked_select(all_predictions[:,label_idx],unknown_label_mask[:,label_idx].type(torch.BoolTensor))
+        # import pdb; pdb.set_trace()
         if len(all_targets_unk)>0 and all_targets_unk.sum().item() > 0:
             AP = metrics.average_precision_score(all_targets_unk, all_predictions_unk, average=None, pos_label=1)
             APs.append(AP)
     meanAP = np.array(APs).mean()
     return meanAP
+
+def custom_mean_squared_error(all_targets, all_predictions, unknown_label_mask):
+    SEs = []
+    for label_idx in range(all_targets.size(1)):
+        all_targets_unk = torch.masked_select(all_targets[:,label_idx],unknown_label_mask[:,label_idx].type(torch.BoolTensor))
+        all_predictions_unk = torch.masked_select(all_predictions[:,label_idx],unknown_label_mask[:,label_idx].type(torch.BoolTensor))
+        # import pdb; pdb.set_trace()
+        if len(all_targets_unk)>0 and all_targets_unk.sum().item() > 0:
+            mse = metrics.mean_squared_error(all_targets_unk, all_predictions_unk)
+            SEs.append(mse)
+    MSE = np.array(SEs).mean()
+    return MSE

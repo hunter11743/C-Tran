@@ -27,7 +27,7 @@ def get_vocab(objData):
     print('Building vocabulary of words...')
     lem = WordNetLemmatizer()
     word_counts = dict()
-    for (i, entry) in enumerate(objData['annotations']):
+    for (i, entry) in enumerate(objData['data']):
         if i % 10000 == 0: print('.'),
         caption = entry['caption']
         for word in word_tokenize(caption.lower()):
@@ -56,8 +56,8 @@ class Coco1000Dataset(torch.utils.data.Dataset):
 
         self.known_labels = known_labels
 
-        # Load annotations.
-        print(('\nLoading %s object annotations...') % self.split)
+        # Load data.
+        print(('\nLoading %s object data...') % self.split)
         self.objData = json.load(open(os.path.join(annotation_dir, 'captions_' + self.split + '2014.json')))
         self.imageIds = [entry['id'] for entry in self.objData['images']]
         self.imageNames = [entry['file_name'] for entry in self.objData['images']]
@@ -77,7 +77,7 @@ class Coco1000Dataset(torch.utils.data.Dataset):
             print('Preparing label space')
             lem = WordNetLemmatizer()
             self.labels = np.zeros((len(self.objData['images']), len(self.vocabulary[0])))
-            for (i, entry) in enumerate(self.objData['annotations']):
+            for (i, entry) in enumerate(self.objData['data']):
                 # if i % 10000 == 0: print('.'),
                 image_id = entry['image_id']
                 caption = entry['caption']

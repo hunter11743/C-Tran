@@ -21,8 +21,8 @@ class NewsDataset(torch.utils.data.Dataset):
         self.known_labels = known_labels
         self.testing=testing
 
-        # Load annotations.
-        print(('Loading %s Label annotations...') % self.split)
+        # Load data.
+        print(('Loading %s Label data...') % self.split)
         self.annData = pickle.load(open(os.path.join(ann_dir, '%s_split.p' % self.split),'rb'))
         self.targets = torch.Tensor(np.load(open(os.path.join(ann_dir, 'caption_%s_space.npy' % self.split),'rb')))
         self.epoch = 1

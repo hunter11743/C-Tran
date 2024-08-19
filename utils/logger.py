@@ -6,6 +6,8 @@ import torch
 import math
 from pdb import set_trace as stop
 import os
+
+from dataloaders.hok4k import HOK4KVis
 from models.utils import custom_replace
 from utils.metrics import *
 import torch.nn.functional as F 
@@ -31,6 +33,7 @@ class Logger:
         self.model_name = args.model_name
         self.best_mAP = 0
         self.best_class_acc = 0
+        self.best_mse = 1000000
 
         if args.model_name:
             try:
@@ -72,7 +75,6 @@ class Logger:
 
     def evaluate(self,train_metrics,valid_metrics,test_metrics,epoch,num_params,model,valid_loss,test_loss,all_preds,all_targs,all_ids,args):
 
-        
         if args.dataset == 'cub':
             for metric in valid_metrics.keys():
                 if not 'all' in metric and not 'time'in metric:
@@ -108,35 +110,38 @@ class Logger:
             print('**********************************')
 
         else:
+            if args.dataset == 'hok4kvis':
+                if valid_metrics['mse'] <= self.best_mse:
+                    self.best_mse = valid_metrics['mse']
+                    self.best_test['epoch'] = epoch
+                if valid_metrics['mAP'] >= self.best_mAP:
+                    self.best_mAP = valid_metrics['mAP']
+            else:
+                if valid_metrics['mAP'] >= self.best_mAP:
+                    self.best_mAP = valid_metrics['mAP']
+                    self.best_test['epoch'] = epoch
 
-            if valid_metrics['mAP'] >= self.best_mAP:
-                self.best_mAP = valid_metrics['mAP']
-                self.best_test['epoch'] = epoch
+            for metric in valid_metrics.keys():
+                if not 'all' in metric and not 'time'in metric:
+                    self.best_valid[metric]= valid_metrics[metric]
+                    self.best_test[metric]= test_metrics[metric]
 
-                for metric in valid_metrics.keys():
-                    if not 'all' in metric and not 'time'in metric:
-                        self.best_valid[metric]= valid_metrics[metric]
-                        self.best_test[metric]= test_metrics[metric]    
-
-                print('> Saving Model\n')
-                save_dict =  {
-                    'epoch': epoch,
-                    'state_dict': model.state_dict(),
-                    'valid_mAP': valid_metrics['mAP'],
-                    'test_mAP': test_metrics['mAP'],
-                    'valid_loss': valid_loss,
-                    'test_loss': test_loss
-                    }
-                torch.save(save_dict, args.model_name+'/best_model.pt')
-
-        
-            print('\n')
-            print('**********************************')
-            print('best mAP:  {:0.1f}'.format(self.best_test['mAP']*100))
-            print('best CF1:  {:0.1f}'.format(self.best_test['CF1']*100))
-            print('best OF1:  {:0.1f}'.format(self.best_test['OF1']*100))
-            print('**********************************')
+            print('> Saving Model\n')
+            save_dict =  {
+                'epoch': epoch,
+                'state_dict': model.state_dict(),
+                'valid_mAP': valid_metrics['mAP'],
+                'test_mAP': test_metrics['mAP'],
+                'valid_loss': valid_loss,
+                'test_loss': test_loss
+                }
+            torch.save(save_dict, args.model_name+'/best_model.pt')
 
 
-
+        print('\n')
+        print('**********************************')
+        print('best mAP:  {:0.1f}'.format(self.best_test['mAP']*100))
+        print('best CF1:  {:0.1f}'.format(self.best_test['CF1']*100))
+        print('best OF1:  {:0.1f}'.format(self.best_test['OF1']*100))
+        print('**********************************')
         return self.best_valid,self.best_test

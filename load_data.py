@@ -11,6 +11,7 @@ from dataloaders.coco80_dataset import Coco80Dataset
 from dataloaders.news500_dataset import NewsDataset
 from dataloaders.coco1000_dataset import Coco1000Dataset
 from dataloaders.cub312_dataset import CUBDataset
+from dataloaders.hok4k import HOK4K, HOK4KVis
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -80,6 +81,48 @@ def get_data(args):
             transform=testTransform,
             known_labels=args.test_known_labels,
             testing=True)
+
+    elif dataset == 'hok4k':
+        data_root = os.path.join(data_root,'CodingChallenge_v2')
+        train_dataset = HOK4K(
+            split='train',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=trainTransform,
+            testing=False,
+            known_labels=args.train_known_labels,
+        )
+        valid_dataset = HOK4K(
+            split='val',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=testTransform,
+            testing=True,
+            known_labels=args.test_known_labels,
+        )
+
+    elif dataset == 'hok4kvis':
+        data_root = os.path.join(data_root,'CodingChallenge_v2')
+        train_dataset = HOK4KVis(
+            split='train',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=trainTransform,
+            testing=False,
+            known_labels=args.train_known_labels,
+        )
+        valid_dataset = HOK4KVis(
+            split='val',
+            data_root=data_root,
+            num_labels=args.num_labels,
+            max_samples=args.max_samples,
+            transform=testTransform,
+            testing=True,
+            known_labels=args.test_known_labels,
+        )
 
     elif dataset == 'coco1000':
         ann_dir = os.path.join(data_root,'coco','annotations_pytorch')

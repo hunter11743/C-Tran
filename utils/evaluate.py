@@ -42,6 +42,12 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
 
     unknown_label_mask = custom_replace(all_masks,1,0,0)
 
+    if args.dataset == 'hok4kvis':
+        if known_labels > 0:
+            mse = custom_mean_squared_error(all_targets,all_predictions,unknown_label_mask)
+        else:
+            mse = metrics.mean_squared_error(all_targets,all_predictions)
+        all_targets[all_targets>0] = 1
 
     if known_labels > 0:
         meanAP = custom_mean_avg_precision(all_targets,all_predictions,unknown_label_mask)
@@ -52,10 +58,10 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
 
     all_targets = all_targets.numpy()
     all_predictions = all_predictions.numpy()
-
-    top_3rd = np.sort(all_predictions)[:,-3].reshape(-1,1)
+    # import pdb; pdb.set_trace()
+    top_2nd = np.sort(all_predictions)[:,-2].reshape(-1,1)
     all_predictions_top3 = all_predictions.copy()
-    all_predictions_top3[all_predictions_top3<top_3rd] = 0
+    all_predictions_top3[all_predictions_top3<top_2nd] = 0
     all_predictions_top3[all_predictions_top3<optimal_threshold] = 0
     all_predictions_top3[all_predictions_top3>=optimal_threshold] = 1
 
@@ -133,6 +139,9 @@ def compute_metrics(args,all_predictions,all_targets,all_masks,loss,loss_unk,ela
         print('Class Acc:    {:0.3f}'.format(class_acc))
         metrics_dict['concept_acc'] = concept_acc
         metrics_dict['class_acc'] = class_acc
+    if args.dataset == 'hok4kvis':
+        print('MSE: {:0.3f}'.format(mse) )
+        metrics_dict['mse'] = mse
 
     print('')
 
