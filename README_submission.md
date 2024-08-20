@@ -13,8 +13,8 @@ Conference on Computer Vision and Pattern Recognition (CVPR) 2021<br/>
 
 ## Submission
 
-The submission features the training code adaptation in this repository and 2 models inside the results folder.
-The models are trained for Label Classification Scoring and Label Visibility ratio Scoring respectively.
+The submission features the training code adaptation in this repository and 3 models inside the results folder.
+The models are trained for Label Classification Scoring and Label Visibility ratio Scoring respectively. The latter also contains a modified model trained without horizontal flip augmentations.
 
 ## Models
 ### 1. HOK4K
@@ -22,6 +22,9 @@ This model is trained to classify the presence of a label. As such its outputs a
 
 ### 2. HOK4KVIS
 This experimental model is trained to classify the presence of a label but also regress its output to the visibility of the region. As such its outputs are more in line with the requested probabilities.
+
+### 3. HOK4KVIS_noflip
+This model is trained similar to the previous model but without horizontal flips to better classify side labels.
 
 ## Results
 The file ```car_imgs_4000_results.csv``` shows the output of the two models and their perceived behaviour on the dataset.
@@ -31,8 +34,11 @@ This can be attributed to the image augmentations from the horizontal flips, whi
 
 Possible solutions include, having associative labels designed to flip with the image transforms. Disabling the image_transforms.
 
+A model with the image transforms disabled is also added, which performs better in cases of right side doors as well.
+
 
 ## Code Execution
+> The original requirements were designed for torch 1 and Cuda 11. An updated ```req_38_trch2_cu12.txt``` is added for this version. The code has also been updated to work with the suggested libraries.
 ### Train
 ```shell
 python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --dataset 'hok4kvis' --use_lmt --dataroot /data --max_samples -1
@@ -46,6 +52,7 @@ python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --datase
 ### Inference
 ```shell
 python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --dataset 'hok4ktest' --use_lmt --dataroot /data --max_samples -1 --inference --saved_model_name results/hok4k.3layer.bsz_8.adam1e-05.lmt.unk_loss/best_model.pt
+python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --dataset 'hok4ktest' --use_lmt --dataroot /data --max_samples -1 --infer_custom --saved_model_name results/hok4kvis.3layer.bsz_8.adam1e-05.lmt.unk_loss.no_flip/best_model.pt --image_path /data/CodingChallenge_v2/imgs/0a1d0d53-eaa4-4f42-9ea7-2197bd183520.jpg
 ```
 * Params
   * inference: runs the standard inference of the C-Tran on test/val subset and outputs metrics
@@ -54,3 +61,6 @@ python main.py  --batch_size 8  --lr 0.00001 --optim 'adam' --layers 3  --datase
     * also generates a best_model.csv for all files without shuffling in corresponding directory
   * custom_infer: runs a single image in the forward pass and prints the probabilities to console
     * use --saved_model_name and --image_path respectively
+* Models
+  * Pretrained models as part of the submission aree available under [Models](https://drive.google.com/drive/folders/1mliQB7q0op_6iLP4l6cvoNmIcF7H9xtf?usp=sharing)
+  * Download the models folders and link the respective model to test in the param ```--saved_model_name```
