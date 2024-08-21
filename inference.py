@@ -5,6 +5,7 @@ import torch
 
 
 def infer(args, model):
+    model.eval()
     rescale = args.scale_size
     random_crop = args.crop_size
     attr_group_dict = args.attr_group_dict
@@ -24,7 +25,7 @@ def infer(args, model):
     with torch.no_grad():
         pred,int_pred,attns = model(image.cuda(),mask_in.cuda())
 
-    pred = torch.sigmoid(pred)
+    pred = torch.nn.functional.sigmoid(pred)
     print("Probabilties:\n"
           f"Hood: \t\t{pred[0,0]}\n"
           f"Backdoor Left: \t{pred[0,1]}")
